@@ -2,7 +2,7 @@
 ## Title: JustItemLocker
 ## IconAtlas: QuestSharing-Padlock
 ## Author: Jeefrect
-## Version: 1.0.1
+## Version: 1.0.2
 ## SavedVariablesPerCharacter: JustItemLockerDB
 
 ## Notes: Lets you lock any item in your bags.
@@ -31,7 +31,6 @@
 
 Addon\Core\Namespace.lua
 Addon\Core\Localization.lua
-Addon\Core\Bootstrap.lua
 
 Addon\Localization\enUS.lua
 Addon\Localization\enGB.lua
@@ -50,4 +49,7 @@ Addon\Data\LockStore.lua
 
 Addon\Integrations\EquipmentSets.lua
 Addon\Integrations\BagSorting.lua
+Addon\Integrations\MerchantSelling.lua
 Addon\Integrations\BlizzardUI.lua
+
+Addon\Core\Bootstrap.lua

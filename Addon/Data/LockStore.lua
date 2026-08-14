@@ -11,7 +11,7 @@ local db
 local suspensionCounts = {}
 
 local function isSupportedLocation(itemLocation)
-    if not itemLocation or not itemLocation:IsValid() then
+    if not itemLocation or not itemLocation:HasAnyLocation() or not itemLocation:IsValid() then
         return false
     end
 

@@ -131,6 +131,7 @@ end
 function BlizzardUI:Initialize()
     ns.EquipmentSets:Initialize()
     ns.BagSorting:Initialize()
+    ns.MerchantSelling:Initialize()
     self:InitializeAuctionHouse()
 
     if self.initialized then
