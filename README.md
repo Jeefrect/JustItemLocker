@@ -1,10 +1,12 @@
-# JustItemLocker
+# Just Item Locker
 
 1. Open your bags or character panel.
 2. Hold **Alt** and **Left Click** an item to lock it.
 3. Repeat the same action to unlock it.
 
 A chat message confirms the change, and protected items display a lock icon.
+
+![JustItemLocker Guide](https://raw.githubusercontent.com/Jeefrect/JustItemLocker/main/Wiki/Images/guide_1_small.png)
 
 ## Features
 
