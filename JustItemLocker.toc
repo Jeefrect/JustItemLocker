@@ -1,0 +1,53 @@
+## Interface: 120100
+## Title: JustItemLocker
+## IconAtlas: QuestSharing-Padlock
+## Author: Jeefrect
+## Version: 1.0.0
+## SavedVariablesPerCharacter: JustItemLockerDB
+
+## Notes: Lets you lock any item in your bags.
+## Notes-deDE: Ermöglicht es dir, jeden Gegenstand in deinen Taschen zu sperren.
+## Notes-esES: Te permite bloquear cualquier objeto de tus bolsas.
+## Notes-esMX: Te permite bloquear cualquier objeto de tus bolsas.
+## Notes-frFR: Permet de verrouiller n’importe quel objet dans vos sacs.
+## Notes-itIT: Ti permette di bloccare qualsiasi oggetto nelle borse.
+## Notes-koKR: 가방에 있는 모든 아이템을 잠글 수 있습니다.
+## Notes-ptBR: Permite bloquear qualquer item nas suas bolsas.
+## Notes-ruRU: Позволяет заблокировать любой предмет в сумках.
+## Notes-zhCN: 可让你锁定背包中的任意物品。
+## Notes-zhTW: 可讓你鎖定背包中的任何物品。
+
+## Category: Loot
+## Category-deDE: Beute
+## Category-esES: Botín
+## Category-esMX: Botín
+## Category-frFR: Butin
+## Category-itIT: Bottino
+## Category-koKR: 전리품
+## Category-ptBR: Saque
+## Category-ruRU: Добыча
+## Category-zhCN: 战利品
+## Category-zhTW: 戰利品
+
+Addon\Core\Namespace.lua
+Addon\Core\Localization.lua
+Addon\Core\Bootstrap.lua
+
+Addon\Localization\enUS.lua
+Addon\Localization\enGB.lua
+Addon\Localization\deDE.lua
+Addon\Localization\esES.lua
+Addon\Localization\esMX.lua
+Addon\Localization\frFR.lua
+Addon\Localization\itIT.lua
+Addon\Localization\koKR.lua
+Addon\Localization\ptBR.lua
+Addon\Localization\ruRU.lua
+Addon\Localization\zhCN.lua
+Addon\Localization\zhTW.lua
+
+Addon\Data\LockStore.lua
+
+Addon\Integrations\EquipmentSets.lua
+Addon\Integrations\BagSorting.lua
+Addon\Integrations\BlizzardUI.lua
