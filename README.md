@@ -18,7 +18,7 @@ A chat message confirms the change, and protected items display a lock icon.
 
 ## Installation
 
-**Ease way:** download from CurseForge
+**Ease way:** download from [CurseForge](https://www.curseforge.com/wow/addons/just-item-locker)
 
 **Hard way:**
 1. Download the Addon.
