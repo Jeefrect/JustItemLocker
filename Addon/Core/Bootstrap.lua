@@ -20,21 +20,25 @@ end
 eventFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "ADDON_LOADED" then
         local loadedName = ...
-        if loadedName ~= addonName then
-            return
+        if loadedName == addonName then
+            ns.LockStore:Initialize()
+            ns.BlizzardUI:Initialize()
+            if ns.BlizzardUI:InitializeAuctionHouse() then
+                self:UnregisterEvent("ADDON_LOADED")
+            end
+
+            self:RegisterEvent("PLAYER_LOGIN")
+            self:RegisterEvent("BAG_UPDATE")
+            self:RegisterEvent("BAG_UPDATE_DELAYED")
+            self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+            self:RegisterEvent("ITEM_UNLOCKED")
+            self:RegisterEvent("EQUIPMENT_SWAP_PENDING")
+            self:RegisterEvent("EQUIPMENT_SWAP_FINISHED")
+        elseif loadedName == "Blizzard_AuctionHouseUI" then
+            if ns.BlizzardUI:InitializeAuctionHouse() then
+                self:UnregisterEvent("ADDON_LOADED")
+            end
         end
-
-        ns.LockStore:Initialize()
-        ns.BlizzardUI:Initialize()
-
-        self:UnregisterEvent("ADDON_LOADED")
-        self:RegisterEvent("PLAYER_LOGIN")
-        self:RegisterEvent("BAG_UPDATE")
-        self:RegisterEvent("BAG_UPDATE_DELAYED")
-        self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-        self:RegisterEvent("ITEM_UNLOCKED")
-        self:RegisterEvent("EQUIPMENT_SWAP_PENDING")
-        self:RegisterEvent("EQUIPMENT_SWAP_FINISHED")
     elseif event == "EQUIPMENT_SWAP_PENDING" then
         ns.EquipmentSets:OnSwapPending()
     elseif event == "EQUIPMENT_SWAP_FINISHED" then

@@ -103,9 +103,35 @@ local function toggleEquippedItem(button, mouseButton)
     end
 end
 
+local function clearManagedAuctionItem(frame, itemLocation)
+    local itemGUID = itemLocation and itemLocation:IsValid()
+        and C_Item.GetItemGUID(itemLocation)
+    if ns.LockStore:IsManaged(itemGUID) then
+        frame:ClearPostItem()
+    end
+end
+
+function BlizzardUI:InitializeAuctionHouse()
+    if self.auctionHouseInitialized then
+        return true
+    end
+
+    local frame = _G.AuctionHouseFrame
+    if not frame
+        or type(frame.SetPostItem) ~= "function"
+        or type(frame.ClearPostItem) ~= "function" then
+        return false
+    end
+
+    self.auctionHouseInitialized = true
+    hooksecurefunc(frame, "SetPostItem", clearManagedAuctionItem)
+    return true
+end
+
 function BlizzardUI:Initialize()
     ns.EquipmentSets:Initialize()
     ns.BagSorting:Initialize()
+    self:InitializeAuctionHouse()
 
     if self.initialized then
         return true
