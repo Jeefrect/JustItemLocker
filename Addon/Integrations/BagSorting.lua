@@ -4,9 +4,14 @@ local BagSorting = {}
 ns.BagSorting = BagSorting
 
 local activeTransaction
+local clickSuspendedGUIDs
 
 local function isBagItem(itemLocation)
     return itemLocation:IsBagAndSlot()
+end
+
+local function isEquippedItem(itemLocation)
+    return itemLocation:IsEquipmentSlot()
 end
 
 local function reconcileManagedLocks()
@@ -27,30 +32,47 @@ local function finishTransaction(transaction)
 end
 
 local function beginTransaction()
-    if activeTransaction then
-        return
+    if not activeTransaction then
+        local suspendedGUIDs = ns.LockStore:SuspendNativeLocks(isBagItem)
+        if suspendedGUIDs then
+            local transaction = {
+                suspendedGUIDs = suspendedGUIDs,
+                sawBagUpdate = false,
+            }
+            activeTransaction = transaction
+
+            C_Timer.After(0.25, function()
+                if activeTransaction == transaction and not transaction.sawBagUpdate then
+                    finishTransaction(transaction)
+                end
+            end)
+
+            C_Timer.After(10, function()
+                finishTransaction(transaction)
+            end)
+        end
     end
 
-    local suspendedGUIDs = ns.LockStore:SuspendNativeLocks(isBagItem)
+    clickSuspendedGUIDs = ns.LockStore:SuspendNativeLocks(isEquippedItem)
+    local suspendedGUIDs = clickSuspendedGUIDs
+    if suspendedGUIDs then
+        C_Timer.After(0, function()
+            if clickSuspendedGUIDs == suspendedGUIDs then
+                clickSuspendedGUIDs = nil
+                ns.LockStore:ResumeNativeLocks(suspendedGUIDs)
+            end
+        end)
+    end
+end
+
+local function endClick()
+    local suspendedGUIDs = clickSuspendedGUIDs
     if not suspendedGUIDs then
         return
     end
 
-    local transaction = {
-        suspendedGUIDs = suspendedGUIDs,
-        sawBagUpdate = false,
-    }
-    activeTransaction = transaction
-
-    C_Timer.After(0.25, function()
-        if activeTransaction == transaction and not transaction.sawBagUpdate then
-            finishTransaction(transaction)
-        end
-    end)
-
-    C_Timer.After(10, function()
-        finishTransaction(transaction)
-    end)
+    clickSuspendedGUIDs = nil
+    ns.LockStore:ResumeNativeLocks(suspendedGUIDs)
 end
 
 function BagSorting:OnBagChanged()
@@ -72,5 +94,6 @@ function BagSorting:Initialize()
 
     self.initialized = true
     BagItemAutoSortButton:HookScript("PreClick", beginTransaction)
+    BagItemAutoSortButton:HookScript("PostClick", endClick)
     return true
 end
