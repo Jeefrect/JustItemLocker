@@ -10,8 +10,7 @@ A chat message confirms the change, and protected items display a lock icon.
 
 ## Features
 
-- Lock or unlock an item with **Alt + Left Click**.
-- Protect items in equipped slots and personal bags 0 through 5.
+- Protect items in equipped slots and personal bags.
 - Prevent protected items from being moved, replaced, sold, or deleted through the standard Blizzard UI.
 - Cancel an open item-deletion confirmation when that same item is locked.
 - Include localization for all locales.
