@@ -44,6 +44,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
     elseif event == "EQUIPMENT_SWAP_FINISHED" then
         ns.EquipmentSets:OnSwapFinished(...)
     elseif event == "ITEM_UNLOCKED" then
+        ns.EquipmentSets:OnItemUnlocked(...)
         ns.LockStore:Reconcile()
     elseif event == "BAG_UPDATE" then
         ns.BagSorting:OnBagChanged()

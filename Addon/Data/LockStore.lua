@@ -6,9 +6,11 @@ ns.LockStore = LockStore
 local SCHEMA_VERSION = 1
 local FIRST_PLAYER_BAG = Enum.BagIndex.Backpack
 local LAST_PLAYER_BAG = Enum.BagIndex.ReagentBag
+local RECONCILE_RETRY_SECONDS = 0.05
 
 local db
 local suspensionCounts = {}
+local reconcileScheduled = false
 
 local function isSupportedLocation(itemLocation)
     if not itemLocation or not itemLocation:HasAnyLocation() or not itemLocation:IsValid() then
@@ -130,16 +132,13 @@ function LockStore:Toggle(itemLocation)
     return self:Lock(itemLocation)
 end
 
-function LockStore:SuspendNativeLocks(predicate)
+function LockStore:BeginNativeLockSuspension(predicate)
     local suspendedGUIDs = {}
     for itemGUID in pairs(db.lockedItems) do
         local itemLocation = getManagedLocation(itemGUID)
         if itemLocation and (not predicate or predicate(itemLocation, itemGUID)) then
             suspendedGUIDs[itemGUID] = true
             suspensionCounts[itemGUID] = (suspensionCounts[itemGUID] or 0) + 1
-            if suspensionCounts[itemGUID] == 1 and C_Item.IsLocked(itemLocation) then
-                C_Item.UnlockItemByGUID(itemGUID)
-            end
         end
     end
 
@@ -148,6 +147,36 @@ function LockStore:SuspendNativeLocks(predicate)
     end
 
     return suspendedGUIDs
+end
+
+function LockStore:SuspendNativeLocks(predicate)
+    local suspendedGUIDs = self:BeginNativeLockSuspension(predicate)
+    if not suspendedGUIDs then
+        return nil
+    end
+
+    for itemGUID in pairs(suspendedGUIDs) do
+        local itemLocation = getManagedLocation(itemGUID)
+        if itemLocation and suspensionCounts[itemGUID] == 1 and C_Item.IsLocked(itemLocation) then
+            C_Item.UnlockItemByGUID(itemGUID)
+        end
+    end
+
+    return suspendedGUIDs
+end
+
+function LockStore:UnlockSuspendedNativeLock(suspendedGUIDs, itemGUID)
+    if not suspendedGUIDs or not suspendedGUIDs[itemGUID] then
+        return false
+    end
+
+    C_Item.UnlockItemByGUID(itemGUID)
+    return true
+end
+
+function LockStore:IsNativeLocked(itemGUID)
+    local itemLocation = getManagedLocation(itemGUID)
+    return itemLocation and C_Item.IsLocked(itemLocation) or false
 end
 
 function LockStore:ResumeNativeLocks(suspendedGUIDs)
@@ -168,7 +197,7 @@ function LockStore:ResumeNativeLocks(suspendedGUIDs)
 end
 
 function LockStore:Reconcile()
-    if not db then
+    if not db or reconcileScheduled then
         return
     end
 
@@ -176,6 +205,12 @@ function LockStore:Reconcile()
         local itemLocation = getManagedLocation(itemGUID)
         if itemLocation and not suspensionCounts[itemGUID] and not C_Item.IsLocked(itemLocation) then
             C_Item.LockItemByGUID(itemGUID)
+            reconcileScheduled = true
+            C_Timer.After(RECONCILE_RETRY_SECONDS, function()
+                reconcileScheduled = false
+                LockStore:Reconcile()
+            end)
+            return
         end
     end
 end
