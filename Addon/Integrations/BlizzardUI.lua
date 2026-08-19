@@ -5,6 +5,7 @@ ns.BlizzardUI = BlizzardUI
 
 local LOCK_ICON_TEXTURE = "Interface\\AddOns\\" .. addonName .. "\\Assets\\LockIcon.png"
 local LOCK_ICON_SIZE = 24
+local lockIcons = setmetatable({}, { __mode = "k" })
 local DELETE_ITEM_POPUPS = {
     "DELETE_ITEM",
     "DELETE_QUEST_ITEM",
@@ -34,25 +35,30 @@ local function cancelPendingDelete()
     end
 end
 
-local function getLockIcon(button)
-    if button.JustItemLockerLockIcon then
-        return button.JustItemLockerLockIcon
+local function getLockIcon(button, create)
+    local icon = lockIcons[button]
+    if icon or not create then
+        return icon
     end
 
-    local icon = button:CreateTexture(nil, "OVERLAY", nil, 7)
+    icon = button:CreateTexture(nil, "OVERLAY", nil, 7)
     icon:SetTexture(LOCK_ICON_TEXTURE)
     icon:SetSize(LOCK_ICON_SIZE, LOCK_ICON_SIZE)
     icon:SetPoint("TOPRIGHT", button, "TOPRIGHT", -1, -1)
     icon:Hide()
 
-    button.JustItemLockerLockIcon = icon
+    lockIcons[button] = icon
     return icon
 end
 
 local function updateLockIcon(button, itemLocation)
     local itemGUID = itemLocation and itemLocation:IsValid()
         and C_Item.GetItemGUID(itemLocation)
-    getLockIcon(button):SetShown(ns.LockStore:IsManaged(itemGUID))
+    local isManaged = ns.LockStore:IsManaged(itemGUID)
+    local icon = getLockIcon(button, isManaged)
+    if icon then
+        icon:SetShown(isManaged)
+    end
 end
 
 local function updateBagItemLockIcon(button)

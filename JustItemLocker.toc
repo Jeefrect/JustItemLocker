@@ -2,7 +2,7 @@
 ## Title: JustItemLocker
 ## IconAtlas: QuestSharing-Padlock
 ## Author: Jeefrect
-## Version: 1.0.4
+## Version: 1.0.5
 ## SavedVariablesPerCharacter: JustItemLockerDB
 
 ## Notes: Lets you lock any item in your bags.
